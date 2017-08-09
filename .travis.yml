@@ -1,0 +1,34 @@
+language: ruby
+cache:
+- bundler
+install:
+- bundle install
+rvm:
+- 2.0
+- 2.1
+- 2.2
+- 2.3.0
+- 2.4.1
+notifications:
+  email:
+    recipients:
+    - haashah@gmail.com
+    - sensu-plugin@sensu-plugins.io
+    on_success: change
+    on_failure: always
+script:
+- bundle exec rake default
+- gem build sensu-plugins-pdns.gemspec
+- gem install sensu-plugins-pdns-*.gem
+deploy:
+  provider: rubygems
+  gem: sensu-plugins-pdns
+  on:
+    tags: true
+    all_branches: true
+    rvm: 2.0
+    rvm: 2.1
+    rvm: 2.2
+    rvm: 2.3.0
+    rvm: 2.4.1
+    repo: haashah/sensu-plugins-pdns
