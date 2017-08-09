@@ -22,7 +22,7 @@ Gem::Specification.new do |s|
   s.has_rdoc               = false
   s.require_paths          = ['lib']
   s.executables            = Dir.glob('bin/**/*.rb').map { |file| File.basename(file) }
-  s.files                  = Dir.glob('{bin,lib}/**/*') + %w[LICENSE README.md CHANGELOG.md]
+  s.files                  = Dir.glob('{bin,lib}/**/*') + %w(LICENSE README.md CHANGELOG.md)
   s.required_ruby_version  = '>= 2.0.0'
   s.test_files             = s.files.grep(%r{^(test|spec|features)/})
 
