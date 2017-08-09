@@ -36,10 +36,9 @@ class PdnsGraphite < Sensu::Plugin::Metric::CLI::Graphite
          default: 'tmp.txt'
 
   def output(*args)
-    unless args.empty?
-      args[2] = Time.now.to_is if args[2].nil?
-      puts "#{`hostname -f`.chomp}-- #{args[0..2].join("\s")}"
-    end
+    return unless args.empty?
+    args[2] = Time.now.to_is if args[2].nil?
+    puts "#{`hostname -f`.chomp}-- #{args[0..2].join('\s')}"
   end
 
   def run
