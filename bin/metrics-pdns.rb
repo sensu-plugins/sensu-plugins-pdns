@@ -27,6 +27,7 @@
 
 require 'sensu-plugin'
 require 'sensu-plugin/metric/cli'
+require 'English'
 
 class PdnsGraphite < Sensu::Plugin::Metric::CLI::Graphite
   option :dump_file,

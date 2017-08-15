@@ -7,4 +7,11 @@ RSpec.describe PdnsGraphite do
     metrics.run
     expect(File).to exist('/tmp/tmp.txt')
   end
+
+  it 'check teardown cleansup properly' do
+    metrics = PdnsGraphite.new
+    metrics.run
+    metrics.teardown
+    expect(File).not_to exist('/tmp/tmp.txt')
+  end
 end
