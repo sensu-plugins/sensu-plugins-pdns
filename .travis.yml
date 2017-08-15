@@ -17,7 +17,7 @@ notifications:
     on_success: change
     on_failure: always
 script:
-- apt-get install -y pdns-recursor
+- sudo apt-get install -y pdns-recursor
 - bundle exec rake default
 - gem build sensu-plugins-pdns.gemspec
 - gem install sensu-plugins-pdns-*.gem
