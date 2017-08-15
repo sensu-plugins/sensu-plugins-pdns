@@ -1,17 +1,20 @@
 require_relative '../bin/metrics-pdns.rb'
-require_relative 'spec_helper.rb'
 
-RSpec.describe PdnsGraphite do
-  it 'check that plugin dumps tmp.txt' do
-    metrics = PdnsGraphite.new
-    metrics.run
-    expect(File).to exist('/tmp/tmp.txt')
+describe 'PdnsGraphite', '#run' do
+  before(:all) do
+    PdnsGraphite.class_variable_set(:@@autorun, nil)
+    @metrics = PdnsGraphite.new
   end
-
-  it 'check teardown cleansup properly' do
-    metrics = PdnsGraphite.new
-    metrics.run
-    metrics.teardown
-    expect(File).not_to exist('/tmp/tmp.txt')
+  context 'when no argument passed' do
+    it 'it dumps tmp.txt' do
+      @metrics.run
+      expect(File).to exist('/tmp/tmp.txt')
+    end
+  end
+  context 'when teardown called' do
+    it 'cleans up properly' do
+      @metrics.teardown
+      expect(File).not_to exist('/tmp/tmp.txt')
+    end
   end
 end
