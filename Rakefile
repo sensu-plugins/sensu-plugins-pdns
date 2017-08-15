@@ -7,7 +7,7 @@ require 'yard'
 require 'yard/rake/yardoc_task'
 
 desc 'Don\'t run Rubocop for unsupported versions'
-args = %i[install_pdns_recursor spec make_bin_executable yard rubocop check_binstubs]
+args = %i[spec make_bin_executable yard rubocop check_binstubs]
 
 YARD::Rake::YardocTask.new do |t|
   OTHER_PATHS = %w[].freeze
@@ -24,11 +24,6 @@ end
 desc 'Make all plugins executable'
 task :make_bin_executable do
   `chmod -R +x bin/*`
-end
-
-desc 'install pdns recursor'
-task :install_pdns_recursor do
-  `sudo apt-get install -y pdns-recursor`
 end
 
 desc 'Test for binstubs'
