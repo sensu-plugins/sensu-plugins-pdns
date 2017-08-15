@@ -45,17 +45,18 @@ class PdnsGraphite < Sensu::Plugin::Metric::CLI::Graphite
     # dump powerdns statistics using rec control
     # TODO: @haashah only extract user specified metrics.
     system "sudo rec_control get-all > /tmp/#{config[:dump_file]}"
-
     if $CHILD_STATUS.exitstatus > 0
       puts 'failed to dump pdns statistics. check pdns process is running!'
       exit 2
     end
-
     File.readlines("/tmp/#{config[:dump_file]}").each do |line|
       output line.split[0], line.split[1]
     end
+  end
 
+  def teardown
     # time to cleanup dump file
     system "sudo rm -rf /tmp/#{config[:dump_file]}"
+    exit 2 if $CHILD_STATUS.exitstatus > 0
   end
 end
