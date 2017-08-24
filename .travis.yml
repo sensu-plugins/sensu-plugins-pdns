@@ -1,6 +1,8 @@
 language: ruby
 cache:
 - bundler
+before_install:
+  gem install bundler -v 1.15
 install:
 - bundle install
 rvm:
@@ -23,6 +25,8 @@ script:
 - gem install sensu-plugins-pdns-*.gem
 deploy:
   provider: rubygems
+  api_key:
+    secure: wrkgVJxfmh88h5WNPzvl77UDdtNSPo0TUkJzqmlGSikvsQtTO+ru6q17cjlvjqNerAnqR6w6kzXrKsMPRnJ4k4L6d5hOdAzFCgWmHWR0xLQXYUTK6e+EQ2omeAcOEH+BtPgSCjouU4gKxTje5XsiBTUxGHGM8cPHTG6r4S0M+c7oGdcu1rN4oPml957Luw48Ds7JXaWa+TBNx0s/wrePasSms3TAw2Jk59Sx3wwH+HwLIx53gEPC4N4HsHMNkfPkw46328b9tTL6l5ou/DLyxCt91FXv+aXSmVYKggRnzXVriGu0PqoPK22aDj7RtTEItngANmcP8b1qfNe90hcW9n8pY+izFmgMJGa36H0BrBZ2INN6WlrTJSoOpkc4ZStOA5s6tAJU30s5tDBCZGKo5tHwhqydTyWoPB12FaMsuPJjOY4z7pgoxdj4wpeIsK7XOxLzp4j9YaRjZ/5IqpAa3Bj+FbB2LQ2XbNb2fRiFj5EaWs4hGNekrIYuyWqW/P8xyV+3/MtK8WKOwx4xnsZmTcxrEmggT2CBZ0Y7sDRrDH79hTnVTAy3qemDJbcpO/rtmTVKtRYpKeFNRf5KlKKSNCa91k0WsbDSt4tbFF4S34pCQ3Tpt7U+JOEhUgyyrBB6nh1nfDKhqtzKrntqqF9Yg1LeD748zI0xO+qZcFF4liU=
   gem: sensu-plugins-pdns
   on:
     tags: true
@@ -32,4 +36,4 @@ deploy:
     rvm: 2.2
     rvm: 2.3.0
     rvm: 2.4.1
-    repo: haashah/sensu-plugins-pdns
+    repo: sensu-plugins/sensu-plugins-pdns

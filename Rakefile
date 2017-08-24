@@ -6,20 +6,16 @@ require 'rubocop/rake_task'
 require 'yard'
 require 'yard/rake/yardoc_task'
 
-desc 'Don\'t run Rubocop for unsupported versions'
-args = [:spec, :make_bin_executable, :yard, :rubocop, :check_binstubs]
-
 YARD::Rake::YardocTask.new do |t|
-  OTHER_PATHS = %w().freeze
+  OTHER_PATHS = %w[].freeze
   t.files = ['lib/**/*.rb', 'bin/**/*.rb', OTHER_PATHS]
-  t.options = %w(--markup-provider=redcarpet --markup=markdown --main=README.md --files CHANGELOG.md)
+  t.options = %w[--markup-provider=redcarpet --markup=markdown --main=README.md --files CHANGELOG.md]
 end
 
 RuboCop::RakeTask.new
 
 RSpec::Core::RakeTask.new(:spec) do |r|
   r.pattern = FileList['**/**/*_spec.rb']
-  r.fail_on_error = true
 end
 
 desc 'Make all plugins executable'
@@ -29,14 +25,16 @@ end
 
 desc 'Test for binstubs'
 task :check_binstubs do
-  bin_list = Gem::Specification.load('sensu-plugins-pdns.gemspec').executables
-  bin_list.each do |b|
-    `which #{ b }`
-    unless $CHILD_STATUS.success?
-      puts "#{b} was not a binstub"
-      exit
+  unless Dir.glob('bin/**/*.rb').empty?
+    bin_list = Gem::Specification.load('sensu-plugins-pdns.gemspec').executables
+    bin_list.each do |b|
+      `which #{ b }`
+      unless $CHILD_STATUS.success?
+        puts "#{b} was not a binstub"
+        exit
+      end
     end
   end
 end
 
-task default: args
+task default: %i[spec make_bin_executable yard rubocop check_binstubs]
