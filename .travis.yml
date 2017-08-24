@@ -2,7 +2,8 @@ language: ruby
 cache:
 - bundler
 before_install:
-  gem install bundler -v 1.15
+  - gem install bundler -v 1.15
+  - sudo apt-get install -y pdns-recursor
 install:
 - bundle install
 rvm:
@@ -19,7 +20,6 @@ notifications:
     on_success: change
     on_failure: always
 script:
-- sudo apt-get install -y pdns-recursor
 - bundle exec rake default
 - gem build sensu-plugins-pdns.gemspec
 - gem install sensu-plugins-pdns-*.gem
