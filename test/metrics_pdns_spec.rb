@@ -5,16 +5,13 @@ describe 'PdnsGraphite', '#run' do
     PdnsGraphite.class_variable_set(:@@autorun, nil)
     @metrics = PdnsGraphite.new
   end
-  context 'when no argument passed' do
-    it 'it dumps tmp.txt' do
+
+  it 'returns ok' do
+    begin
       @metrics.run
-      expect(File).to exist('/tmp/tmp.txt')
+    rescue SystemExit => e
+      exit_code = e.status
     end
-  end
-  context 'when teardown called' do
-    it 'cleans up properly' do
-      @metrics.teardown
-      expect(File).not_to exist('/tmp/tmp.txt')
-    end
+    expect(exit_code).to eq 0
   end
 end
