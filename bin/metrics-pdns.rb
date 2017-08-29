@@ -37,14 +37,39 @@ class PdnsGraphite < Sensu::Plugin::Metric::CLI::Graphite
          long: '--scheme SCHEME',
          default: "#{Socket.gethostname}.pdns"
 
-  def run
-    metrics = `sudo rec_control get-all`.split("\n")
+  option :syslog_path,
+         description: 'Path to the syslog',
+         short: '-sl SYSLOG',
+         long: '--syslog SYSLOG',
+         default: '/var/log/messages'
+
+  def cmd_run(cmd)
+    result = `#{cmd}`.split("\n")
     if $CHILD_STATUS.exitstatus > 0
       critical 'Failed to dump pdns statistics. Check that the pdns process is running!'
     end
+    result
+  end
+
+  def run
+    metrics = cmd_run('sudo rec_control get-all')
     metrics.each do |metric|
       (key, value) = metric.split("\t")
       output([config[:scheme], key].join('.'), value)
+    end
+    # send signal to pdns process to dump stats
+    cmd_run('sudo pkill -SIGUSR1 pdns_recursor')
+    # parse stats from syslog
+    metrics = cmd_run("sudo tail #{config[:syslog_path]} -n 6 | grep pdns_recursor")
+    metrics.each do |metric|
+      (_jargon, stats) = metric.split('stats:')
+      keyvalues = stats.split(',')
+      keyvalues.each do |keyvalue|
+        key = keyvalue.strip!.scan(/\D+/)[0].strip
+        key.gsub!(/[()]|\s/, '-')
+        value = keyvalue.scan(/\d+/)[0]
+        output([config[:scheme], key].join('.'), value)
+      end
     end
     ok
   end

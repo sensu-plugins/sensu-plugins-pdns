@@ -3,9 +3,14 @@ require_relative '../bin/metrics-pdns.rb'
 describe 'PdnsGraphite', '#run' do
   before(:all) do
     PdnsGraphite.class_variable_set(:@@autorun, nil)
-    @metrics = PdnsGraphite.new
+    args = %w[--syslog /var/log/syslog]
+    @metrics = PdnsGraphite.new(args)
   end
-
+  it 'verifies cmd_run()' do
+    begin
+      expect { @metrics.cmd_run('ls -al /opt').to output.to_stdout }
+    end
+  end
   it 'returns ok' do
     begin
       @metrics.run
