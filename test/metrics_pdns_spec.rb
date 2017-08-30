@@ -3,8 +3,7 @@ require_relative '../bin/metrics-pdns.rb'
 describe 'PdnsGraphite', '#run' do
   before(:all) do
     PdnsGraphite.class_variable_set(:@@autorun, nil)
-    args = %w[--syslog /var/log/syslog]
-    @metrics = PdnsGraphite.new(args)
+    @metrics = PdnsGraphite.new
   end
   it 'verifies cmd_run()' do
     begin
@@ -15,8 +14,16 @@ describe 'PdnsGraphite', '#run' do
     begin
       @metrics.run
     rescue SystemExit => e
-      exit_code = e.status
+      expect(e.status).to eq 0
     end
-    expect(exit_code).to eq 0
+  end
+  it 'verifies --extra flag' do
+    begin
+      args = %w[--syslog /var/log/syslog --extra true]
+      @metrics = PdnsGraphite.new(args)
+      @metrics.run
+    rescue SystemExit => e
+      expect(e.status).to eq 0
+    end
   end
 end
