@@ -46,7 +46,7 @@ class PdnsGraphite < Sensu::Plugin::Metric::CLI::Graphite
   def cmd_run(cmd)
     result = `#{cmd}`.split("\n")
     if $CHILD_STATUS.exitstatus > 0
-      critical 'Failed to dump pdns statistics. Check that the pdns process is running!'
+      critical "Failed to execute #{cmd}"
     end
     result
   end
@@ -61,14 +61,17 @@ class PdnsGraphite < Sensu::Plugin::Metric::CLI::Graphite
     cmd_run('sudo pkill -SIGUSR1 pdns_recursor')
     # parse stats from syslog
     metrics = cmd_run("sudo tail #{config[:syslog_path]} -n 6 | grep pdns_recursor")
-    metrics.each do |metric|
-      (_jargon, stats) = metric.split('stats:')
-      keyvalues = stats.split(',')
-      keyvalues.each do |keyvalue|
-        key = keyvalue.strip!.scan(/\D+/)[0].strip
-        key.gsub!(/[()]|\s/, '-')
-        value = keyvalue.scan(/\d+/)[0]
-        output([config[:scheme], key].join('.'), value)
+    unless metrics.nil?
+      metrics.each do |metric|
+        next unless metric.include?('stats:')
+        (_jargon, stats) = metric.split('stats:')
+        keyvalues = stats.split(',')
+        keyvalues.each do |keyvalue|
+          key = keyvalue.strip!.scan(/\D+/)[0].strip
+          key.gsub!(/[()]|\s/, '-')
+          value = keyvalue.scan(/\d+/)[0]
+          output([config[:scheme], key].join('.'), value)
+        end
       end
     end
     ok
