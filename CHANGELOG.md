@@ -3,6 +3,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- Add support to capture more PowerDNS metrics like queries/second.
+
 ## 0.0.1 - 2017-08-27
 ### Added
 - Initial release

@@ -19,6 +19,8 @@
 #
 # NOTES:
 #   Requires sudo permissions for the sensu user to run rec_control
+#   Requires sudo permissions for the sensu user to run tail and pkill commands
+#   when using the extra flag for syslog stats.
 #
 # LICENSE:
 #   <Hammad Shah>  <haashah@gmail.com>
@@ -37,15 +39,52 @@ class PdnsGraphite < Sensu::Plugin::Metric::CLI::Graphite
          long: '--scheme SCHEME',
          default: "#{Socket.gethostname}.pdns"
 
-  def run
-    metrics = `sudo rec_control get-all`.split("\n")
+  option :syslog_path,
+         description: 'Path to the syslog',
+         long: '--syslog SYSLOG',
+         default: '/var/log/messages'
+
+  option :extra_stats,
+         description: 'flag to send stats collected from syslog like qps',
+         boolean: true,
+         short: '-e',
+         long: '--extra',
+         default: false
+
+  def cmd_run(cmd)
+    result = `#{cmd}`.split("\n")
     if $CHILD_STATUS.exitstatus > 0
-      critical 'Failed to dump pdns statistics. Check that the pdns process is running!'
+      critical "Failed to execute #{cmd}"
     end
+    result
+  end
+
+  def parse_syslog
+    # send signal to pdns process to dump stats
+    cmd_run('sudo pkill -SIGUSR1 pdns_recursor')
+    # parse stats from syslog
+    metrics = cmd_run("sudo tail #{config[:syslog_path]} -n 6 | grep pdns_recursor")
+    return if metrics.nil?
+    metrics.each do |metric|
+      next unless metric.include?('stats:')
+      (_jargon, stats) = metric.split('stats:')
+      keyvalues = stats.split(',')
+      keyvalues.each do |keyvalue|
+        key = keyvalue.strip!.scan(/\D+/)[0].strip
+        key.gsub!(/[()]|\s/, '-')
+        value = keyvalue.scan(/\d+/)[0]
+        output([config[:scheme], key].join('.'), value)
+      end
+    end
+  end
+
+  def run
+    metrics = cmd_run('sudo rec_control get-all')
     metrics.each do |metric|
       (key, value) = metric.split("\t")
       output([config[:scheme], key].join('.'), value)
     end
+    parse_syslog if config[:extra_stats]
     ok
   end
 end

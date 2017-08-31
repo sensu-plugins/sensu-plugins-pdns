@@ -7,6 +7,10 @@
 ## Functionality
 metrics-pdns.rb - Query PowerDNS for statistics. Record stats as metrics and output in Graphite plaintext format
 
+Arguments:
+* --syslog: specify the path to syslog to fetch the extra pdns stats from. default: /var/log/messages
+* --extra: flag to enable sending of stats collected from syslog. default value is false.
+
 Details:
  [PowerDNS statistics](https://doc.powerdns.com/recursor/metrics.html)
 
