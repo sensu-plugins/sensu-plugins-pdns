@@ -19,6 +19,8 @@
 #
 # NOTES:
 #   Requires sudo permissions for the sensu user to run rec_control
+#   Requires sudo permissions for the sensu user to run tail and pkill commands
+#   when using the extra flag for syslog stats.
 #
 # LICENSE:
 #   <Hammad Shah>  <haashah@gmail.com>
@@ -44,8 +46,9 @@ class PdnsGraphite < Sensu::Plugin::Metric::CLI::Graphite
 
   option :extra_stats,
          description: 'flag to send stats collected from syslog like qps',
-         short: '-e EXTRA',
-         long: '--extra EXTRA',
+         boolean: true,
+         short: '-e',
+         long: '--extra',
          default: false
 
   def cmd_run(cmd)
